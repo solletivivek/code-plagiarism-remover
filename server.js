@@ -29,9 +29,11 @@ app.post('/remove-plagiarism', async (req, res) => {
     const { code } = req.body;
     try {
         const nameResponse = await fetch(RANDOM_NAME_API);
-        const names = await nameResponse.json();
+        if (!nameResponse.ok) {
+            throw new Error('Failed to fetch names');
+        }
 
-        // Replace variable names with random names
+        const names = await nameResponse.json();
         const modifiedCode = replaceVariableNames(code, names);
 
         res.json({ modifiedCode, names });
@@ -40,6 +42,7 @@ app.post('/remove-plagiarism', async (req, res) => {
         res.status(500).json({ message: "Error removing plagiarism" });
     }
 });
+
 
 // Route to handle regeneration of names
 app.post('/regenerate-names', async (req, res) => {
